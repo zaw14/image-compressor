@@ -3,705 +3,334 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="免费在线图片压缩工具，纯浏览器处理，不上传服务器，保护你的隐私。支持 JPG、PNG、WebP 格式批量压缩。">
-<title>极速图片压缩 - 免费在线工具，不上传服务器</title>
+<meta name="description" content="图片压缩">
+<title>极速图片压缩</title>
 <style>
-/* ==================== 全局样式 ==================== */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --bg-primary: #0b0b14;
-  --bg-secondary: #131324;
-  --bg-card: rgba(22, 22, 45, 0.7);
-  --border: rgba(255, 255, 255, 0.06);
-  --text-primary: #e8e8f0;
-  --text-secondary: #9898b0;
-  --text-muted: #606078;
-  --accent: #6366f1;
-  --accent-hover: #818cf8;
-  --accent-gradient: linear-gradient(135deg, #6366f1, #a855f7);
-  --success: #22c55e;
-  --danger: #ef4444;
-  --radius: 16px;
-  --radius-sm: 10px;
-  --shadow: 0 8px 32px rgba(0,0,0,0.3);
-  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-html { font-size: 16px; scroll-behavior: smooth; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  min-height: 100vh;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* 背景装饰 */
-body::before {
-  content: '';
-  position: fixed;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background:
-    radial-gradient(ellipse at 20% 50%, rgba(99,102,241,0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(168,85,247,0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 80%, rgba(99,102,241,0.04) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* ==================== 布局 ==================== */
-.container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 40px 20px 60px;
-  position: relative;
-  z-index: 1;
-}
-
-/* ==================== Header ==================== */
-.header {
-  text-align: center;
-  margin-bottom: 48px;
-}
-.header .logo {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 16px;
-}
-.header .logo svg { width: 36px; height: 36px; }
-.header h1 {
-  font-size: 2rem;
-  font-weight: 700;
-  background: var(--accent-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: -0.02em;
-}
-.header p {
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-  margin-top: 8px;
-}
-.header .badge-row {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 16px;
-  flex-wrap: wrap;
-}
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border-radius: 100px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  background: rgba(99,102,241,0.1);
-  color: var(--accent-hover);
-  border: 1px solid rgba(99,102,241,0.2);
-}
-.badge.green {
-  background: rgba(34,197,94,0.1);
-  color: var(--success);
-  border-color: rgba(34,197,94,0.2);
-}
-
-/* ==================== 上传区 ==================== */
-.upload-zone {
-  background: var(--bg-card);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 2px dashed var(--border);
-  border-radius: var(--radius);
-  padding: 60px 30px;
-  text-align: center;
-  cursor: pointer;
-  transition: all var(--transition);
-  margin-bottom: 24px;
-}
-.upload-zone:hover, .upload-zone.drag-over {
-  border-color: var(--accent);
-  background: rgba(99,102,241,0.05);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(99,102,241,0.1);
-}
-.upload-zone.has-files {
-  padding: 24px;
-}
-.upload-icon {
-  width: 64px;
-  height: 64px;
-  margin: 0 auto 20px;
-  background: rgba(99,102,241,0.1);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform var(--transition);
-}
-.upload-zone:hover .upload-icon { transform: scale(1.05); }
-.upload-zone h3 {
-  font-size: 1.15rem;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: var(--text-primary);
-}
-.upload-zone .hint {
-  color: var(--text-muted);
-  font-size: 0.85rem;
-}
-.upload-zone .formats {
-  margin-top: 16px;
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.upload-zone .format-tag {
-  padding: 4px 12px;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  background: rgba(255,255,255,0.04);
-  color: var(--text-secondary);
-  border: 1px solid var(--border);
-}
-
-/* ==================== 控制条 ==================== */
-.controls {
-  background: var(--bg-card);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 20px 24px;
-  margin-bottom: 24px;
-  display: none;
-}
-.controls.visible { display: block; }
-.controls-row {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-.controls-row label {
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  white-space: nowrap;
-}
-.controls-row input[type="range"] {
-  flex: 1;
-  min-width: 150px;
-  -webkit-appearance: none;
-  height: 6px;
-  border-radius: 3px;
-  background: rgba(255,255,255,0.1);
-  outline: none;
-}
-.controls-row input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--accent-gradient);
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(99,102,241,0.4);
-}
-.controls-row .quality-value {
-  font-weight: 700;
-  font-size: 1.1rem;
-  color: var(--accent-hover);
-  min-width: 42px;
-  text-align: center;
-}
-.controls-row .format-select {
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
-  background: rgba(255,255,255,0.05);
-  border: 1px solid var(--border);
-  color: var(--text-primary);
-  font-size: 0.85rem;
-  cursor: pointer;
-  outline: none;
-}
-.controls-row .format-select:focus { border-color: var(--accent); }
-.controls-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 16px;
-  flex-wrap: wrap;
-}
-.btn {
-  padding: 10px 22px;
-  border-radius: var(--radius-sm);
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition);
-  border: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  text-decoration: none;
-}
-.btn-primary {
-  background: var(--accent-gradient);
-  color: white;
-  box-shadow: 0 4px 16px rgba(99,102,241,0.3);
-}
-.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(99,102,241,0.4); }
-.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
-.btn-secondary {
-  background: rgba(255,255,255,0.06);
-  color: var(--text-primary);
-  border: 1px solid var(--border);
-}
-.btn-secondary:hover { background: rgba(255,255,255,0.1); }
-.btn-danger {
-  background: rgba(239,68,68,0.15);
-  color: var(--danger);
-  border: 1px solid rgba(239,68,68,0.2);
-}
-.btn-danger:hover { background: rgba(239,68,68,0.25); }
-
-/* ==================== 文件列表 ==================== */
-.file-list { display: none; }
-.file-list.visible { display: block; }
-.file-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
-}
-.file-card {
-  background: var(--bg-card);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 20px;
-  transition: all var(--transition);
-}
-.file-card:hover { border-color: rgba(99,102,241,0.3); }
-.file-card .preview-img {
-  width: 100%;
-  height: 160px;
-  object-fit: contain;
-  background: rgba(0,0,0,0.3);
-  border-radius: var(--radius-sm);
-  margin-bottom: 14px;
-}
-.file-card .file-name {
-  font-size: 0.85rem;
-  font-weight: 500;
-  word-break: break-all;
-  margin-bottom: 10px;
-  color: var(--text-primary);
-}
-.file-card .size-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  margin-bottom: 6px;
-}
-.file-card .size-info .reduced {
-  color: var(--success);
-  font-weight: 600;
-}
-.file-card .progress-bar {
-  height: 4px;
-  border-radius: 2px;
-  background: rgba(255,255,255,0.06);
-  margin: 10px 0;
-  overflow: hidden;
-}
-.file-card .progress-bar .fill {
-  height: 100%;
-  border-radius: 2px;
-  background: var(--accent-gradient);
-  transition: width 0.3s ease;
-  width: 0%;
-}
-.file-card .card-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 12px;
-}
-.file-card .card-actions .btn {
-  flex: 1;
-  padding: 8px 12px;
-  font-size: 0.8rem;
-  justify-content: center;
-}
-
-/* ==================== 全局操作 ==================== */
-.global-actions {
-  display: none;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 24px;
-  flex-wrap: wrap;
-}
-.global-actions.visible { display: flex; }
-
-/* ==================== 状态提示 ==================== */
-.status-toast {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--bg-card);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 12px 24px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  z-index: 1000;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-.status-toast.show { opacity: 1; pointer-events: auto; }
-
-/* ==================== 统计区 ==================== */
-.stats {
-  display: none;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-.stats.visible {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-}
-.stat-card {
-  background: var(--bg-card);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 18px 20px;
-  text-align: center;
-}
-.stat-card .stat-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  background: var(--accent-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.stat-card .stat-label {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  margin-top: 4px;
-}
-
-/* ==================== Footer ==================== */
-.footer {
-  text-align: center;
-  margin-top: 60px;
-  padding-top: 30px;
-  border-top: 1px solid var(--border);
-}
-.footer .contact {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 24px;
-  border-radius: var(--radius-sm);
-  background: rgba(99,102,241,0.08);
-  border: 1px solid rgba(99,102,241,0.15);
-  color: var(--accent-hover);
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all var(--transition);
-  text-decoration: none;
-}
-.footer .contact:hover { background: rgba(99,102,241,0.15); }
-.footer .copyright {
-  color: var(--text-muted);
-  font-size: 0.8rem;
-  margin-top: 20px;
-}
-.footer .privacy-note {
-  color: var(--text-muted);
-  font-size: 0.75rem;
-  margin-top: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-
-/* ==================== 响应式 ==================== */
-@media (max-width: 640px) {
-  .container { padding: 24px 12px 40px; }
-  .header h1 { font-size: 1.5rem; }
-  .upload-zone { padding: 40px 16px; }
-  .file-grid { grid-template-columns: 1fr; }
-  .controls-row { gap: 12px; }
-}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg-primary:#0b0b14;--bg-secondary:#131324;--bg-card:rgba(22,22,45,0.7);--border:rgba(255,255,255,0.06);--text-primary:#e8e8f0;--text-secondary:#9898b0;--text-muted:#606078;--accent:#6366f1;--accent-hover:#818cf8;--accent-gradient:linear-gradient(135deg,#6366f1,#a855f7);--success:#22c55e;--danger:#ef4444;--warning:#f59e0b;--radius:16px;--radius-sm:10px;--shadow:0 8px 32px rgba(0,0,0,0.3);--transition:0.2s cubic-bezier(0.4,0,0.2,1)}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg-primary);color:var(--text-primary);min-height:100vh;line-height:1.6;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 20% 50%,rgba(99,102,241,0.08) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(168,85,247,0.06) 0%,transparent 50%),radial-gradient(ellipse at 50% 80%,rgba(99,102,241,0.04) 0%,transparent 50%);pointer-events:none;z-index:0}
+.container{max-width:900px;margin:0 auto;padding:40px 20px 60px;position:relative;z-index:1}
+.header{text-align:center;margin-bottom:48px}
+.header h1{font-size:2rem;font-weight:700;background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.02em}
+.header p{color:var(--text-secondary);font-size:0.95rem;margin-top:8px}
+.badge-row{display:flex;justify-content:center;gap:10px;margin-top:16px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:100px;font-size:0.8rem;font-weight:500;background:rgba(99,102,241,0.1);color:var(--accent-hover);border:1px solid rgba(99,102,241,0.2)}
+.badge.green{background:rgba(34,197,94,0.1);color:var(--success);border-color:rgba(34,197,94,0.2)}
+.upload-zone{background:var(--bg-card);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:2px dashed var(--border);border-radius:var(--radius);padding:60px 30px;text-align:center;cursor:pointer;transition:all var(--transition);margin-bottom:24px}
+.upload-zone:hover,.upload-zone.drag-over{border-color:var(--accent);background:rgba(99,102,241,0.05);transform:translateY(-2px);box-shadow:0 12px 40px rgba(99,102,241,0.1)}
+.upload-zone.has-files{padding:24px}
+.upload-icon{width:64px;height:64px;margin:0 auto 20px;background:rgba(99,102,241,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;transition:transform var(--transition)}
+.upload-zone:hover .upload-icon{transform:scale(1.05)}
+.upload-zone h3{font-size:1.15rem;font-weight:600;margin-bottom:8px}
+.upload-zone .hint{color:var(--text-muted);font-size:0.85rem}
+.upload-zone .formats{margin-top:16px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.format-tag{padding:4px 12px;border-radius:6px;font-size:0.75rem;font-weight:500;background:rgba(255,255,255,0.04);color:var(--text-secondary);border:1px solid var(--border)}
+.controls{background:var(--bg-card);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:24px;display:none}
+.controls.visible{display:block}
+.controls-row{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.controls-row label{font-size:0.85rem;font-weight:500;color:var(--text-secondary);white-space:nowrap}
+.controls-row input[type=range]{flex:1;min-width:150px;-webkit-appearance:none;height:6px;border-radius:3px;background:rgba(255,255,255,0.1);outline:none}
+.controls-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--accent-gradient);cursor:pointer;box-shadow:0 2px 8px rgba(99,102,241,0.4)}
+.quality-value{font-weight:700;font-size:1.1rem;color:var(--accent-hover);min-width:42px;text-align:center}
+.format-select{padding:8px 12px;border-radius:var(--radius-sm);background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text-primary);font-size:0.85rem;cursor:pointer;outline:none}
+.format-select:focus{border-color:var(--accent)}
+.controls-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.btn{padding:10px 22px;border-radius:var(--radius-sm);font-size:0.9rem;font-weight:600;cursor:pointer;transition:all var(--transition);border:none;display:inline-flex;align-items:center;gap:8px;text-decoration:none}
+.btn-primary{background:var(--accent-gradient);color:white;box-shadow:0 4px 16px rgba(99,102,241,0.3)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(99,102,241,0.4)}
+.btn-primary:disabled{opacity:0.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-secondary{background:rgba(255,255,255,0.06);color:var(--text-primary);border:1px solid var(--border)}
+.btn-secondary:hover{background:rgba(255,255,255,0.1)}
+.btn-danger{background:rgba(239,68,68,0.15);color:var(--danger);border:1px solid rgba(239,68,68,0.2)}
+.btn-danger:hover{background:rgba(239,68,68,0.25)}
+.file-list{display:none}
+.file-list.visible{display:block}
+.file-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.file-card{background:var(--bg-card);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:all var(--transition)}
+.file-card:hover{border-color:rgba(99,102,241,0.3)}
+.file-card .preview-img{width:100%;height:160px;object-fit:contain;background:rgba(0,0,0,0.3);border-radius:var(--radius-sm);margin-bottom:14px}
+.file-card .file-name{font-size:0.85rem;font-weight:500;word-break:break-all;margin-bottom:10px}
+.file-card .size-info{display:flex;justify-content:space-between;align-items:center;font-size:0.8rem;color:var(--text-secondary);margin-bottom:4px}
+.file-card .note{font-size:0.78rem;margin-top:6px}
+.file-card .note.good{color:var(--success)}
+.file-card .note.warn{color:var(--warning)}
+.file-card .card-actions{display:flex;gap:8px;margin-top:12px}
+.file-card .card-actions .btn{flex:1;padding:8px 12px;font-size:0.8rem;justify-content:center}
+.global-actions{display:none;justify-content:center;gap:12px;margin-top:24px;flex-wrap:wrap}
+.global-actions.visible{display:flex}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--bg-card);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 24px;font-size:0.9rem;font-weight:500;z-index:1000;opacity:0;pointer-events:none;transition:opacity 0.3s ease}
+.toast.show{opacity:1;pointer-events:auto}
+.stats{display:none;gap:16px;margin-bottom:24px}
+.stats.visible{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.stat-card{background:var(--bg-card);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;text-align:center}
+.stat-card .stat-value{font-size:1.5rem;font-weight:700;background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-card .stat-label{font-size:0.8rem;color:var(--text-muted);margin-top:4px}
+.footer{text-align:center;margin-top:60px;padding-top:30px;border-top:1px solid var(--border)}
+.contact-card{text-align:center;margin:48px 0 0}
+.contact-card-inner{display:inline-block;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);border-radius:16px;padding:28px 36px;max-width:480px}
+.contact-card-inner p{margin-bottom:6px}
+.contact-card-inner .sub{font-size:0.85rem;color:var(--text-secondary);margin-bottom:18px;line-height:1.6}
+.contact-card-inner button{padding:12px 28px;background:var(--accent-gradient);color:white;border-radius:10px;border:none;font-size:0.9rem;font-weight:600;cursor:pointer}
+.privacy-note{color:var(--text-muted);font-size:0.75rem;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:6px}
+.copyright{color:var(--text-muted);font-size:0.8rem;margin-top:20px}
+@media(max-width:640px){.container{padding:24px 12px 40px}.header h1{font-size:1.5rem}.upload-zone{padding:40px 16px}.file-grid{grid-template-columns:1fr}.controls-row{gap:12px}}
 </style>
 </head>
 <body>
-
-<!-- 状态提示 -->
-<div class="status-toast" id="toast"></div>
-
+<div class="toast" id="toast"></div>
 <div class="container">
-  <!-- Header -->
-  <header class="header">
-    <div class="logo">
-      <svg viewBox="0 0 36 36" fill="none">
-        <rect width="36" height="36" rx="10" fill="url(#g)"/>
-        <path d="M10 18l5-5 4 4 7-7" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M21 10h5v5" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <defs><linearGradient id="g" x1="0" y1="0" x2="36" y2="36"><stop stop-color="#6366f1"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs>
-      </svg>
-    </div>
-    <h1>极速图片压缩</h1>
-    <p>纯浏览器处理 · 不上传服务器 · 保护你的隐私</p>
-    <div class="badge-row">
-      <span class="badge green">🔒 数据不上传</span>
-      <span class="badge">⚡ 极速压缩</span>
-      <span class="badge">📦 批量处理</span>
-      <span class="badge">🆓 完全免费</span>
-    </div>
-  </header>
+<header class="header">
+<h1>极速图片压缩</h1>
+<p>纯浏览器处理 · 不上传服务器 · 保护你的隐私</p>
+<div class="badge-row">
+<span class="badge green">🔒 数据不上传</span>
+<span class="badge">⚡ 大图自动缩放</span>
+<span class="badge">📦 批量处理</span>
+<span class="badge">🆓 完全免费</span>
+</div>
+</header>
 
-  <!-- 上传区 -->
-  <div class="upload-zone" id="uploadZone">
-    <div class="upload-icon">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-    </div>
-    <h3>拖拽图片到此处，或点击上传</h3>
-    <p class="hint">支持一次上传多张图片</p>
-    <div class="formats">
-      <span class="format-tag">JPG</span>
-      <span class="format-tag">PNG</span>
-      <span class="format-tag">WebP</span>
-      <span class="format-tag">BMP</span>
-      <span class="format-tag">GIF</span>
-    </div>
-    <input type="file" id="fileInput" accept="image/*" multiple hidden>
-  </div>
-
-  <!-- 统计 -->
-  <div class="stats" id="stats">
-    <div class="stat-card">
-      <div class="stat-value" id="statCount">0</div>
-      <div class="stat-label">文件数</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value" id="statOriginal">0 KB</div>
-      <div class="stat-label">原始大小</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value" id="statCompressed">0 KB</div>
-      <div class="stat-label">压缩后</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value" id="statSaved">0%</div>
-      <div class="stat-label">节省空间</div>
-    </div>
-  </div>
-
-  <!-- 控制条 -->
-  <div class="controls" id="controls">
-    <div class="controls-row">
-      <label>压缩质量</label>
-      <input type="range" id="quality" min="10" max="100" value="75">
-      <span class="quality-value" id="qualityLabel">75%</span>
-      <label>输出格式</label>
-      <select class="format-select" id="outputFormat">
-        <option value="auto">保持原格式</option>
-        <option value="image/jpeg">JPG</option>
-        <option value="image/png">PNG</option>
-        <option value="image/webp">WebP</option>
-      </select>
-    </div>
-    <div class="controls-actions">
-      <button class="btn btn-primary" id="compressAllBtn">🚀 全部压缩</button>
-      <button class="btn btn-secondary" id="downloadAllBtn" disabled>📥 全部下载</button>
-      <button class="btn btn-danger" id="clearBtn">🗑 清空</button>
-    </div>
-  </div>
-
-  <!-- 文件列表 -->
-  <div class="file-list" id="fileList">
-    <div class="file-grid" id="fileGrid"></div>
-  </div>
-
-  <!-- 全局下载 -->
-  <div class="global-actions" id="globalActions">
-    <button class="btn btn-primary" id="downloadAllBtn2" disabled>📥 一键下载全部</button>
-  </div>
-
-  <!-- Footer -->
-
-  <!-- ==================== 联系入口 ==================== -->
-  <div style="text-align:center; margin: 48px 0 0;">
-    <div style="display:inline-block; background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.2); border-radius:16px; padding:28px 36px; max-width:480px;">
-      <p style="font-size:1rem; font-weight:600; color:#e8e8f0; margin-bottom:6px;">🔧 需要定制工具或做网站？</p>
-      <p style="font-size:0.85rem; color:#9898b0; margin-bottom:18px; line-height:1.6;">我也接网站开发、小程序、自动化脚本等定制需求，价格实惠，交期快</p>
-      <button onclick="navigator.clipboard.writeText('17703860141');this.textContent='已复制！打开微信添加';setTimeout(()=>this.textContent='📱 加微信咨询',2000)" style="display:inline-block; padding:12px 28px; background:var(--accent-gradient); color:white; border-radius:10px; border:none; font-size:0.9rem; font-weight:600; cursor:pointer;">📱 复制微信号，加我咨询</button>
-    </div>
-  </div>
-
-  <footer class="footer">
-    <div class="privacy-note">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-      所有图片在你自己的浏览器中处理，不会被上传到任何服务器，请放心使用
-    </div>
-    <p class="copyright">© 2026 极速图片压缩 · 免费在线工具</p>
-  </footer>
+<div class="upload-zone" id="uploadZone">
+<div class="upload-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+<h3>拖拽图片到此处，或点击上传</h3>
+<p class="hint">支持一次上传多张 · 超大图自动缩小</p>
+<div class="formats"><span class="format-tag">JPG</span><span class="format-tag">PNG</span><span class="format-tag">WebP</span><span class="format-tag">BMP</span></div>
+<input type="file" id="fileInput" accept="image/*" multiple hidden>
 </div>
 
-<script>
-// ==================== 核心逻辑 ====================
-const uploadZone = document.getElementById('uploadZone');
-const fileInput = document.getElementById('fileInput');
-const fileGrid = document.getElementById('fileGrid');
-const fileList = document.getElementById('fileList');
-const controls = document.getElementById('controls');
-const stats = document.getElementById('stats');
-const qualitySlider = document.getElementById('quality');
-const qualityLabel = document.getElementById('qualityLabel');
-const outputFormat = document.getElementById('outputFormat');
-const compressAllBtn = document.getElementById('compressAllBtn');
-const downloadAllBtn = document.getElementById('downloadAllBtn');
-const downloadAllBtn2 = document.getElementById('downloadAllBtn2');
-const clearBtn = document.getElementById('clearBtn');
-const globalActions = document.getElementById('globalActions');
-const toast = document.getElementById('toast');
+<div class="stats" id="stats">
+<div class="stat-card"><div class="stat-value" id="statCount">0</div><div class="stat-label">文件数</div></div>
+<div class="stat-card"><div class="stat-value" id="statOriginal">0 KB</div><div class="stat-label">原始大小</div></div>
+<div class="stat-card"><div class="stat-value" id="statCompressed">0 KB</div><div class="stat-label">压缩后</div></div>
+<div class="stat-card"><div class="stat-value" id="statSaved">0%</div><div class="stat-label">节省空间</div></div>
+</div>
 
-let files = [];       // { file, compressedBlob, previewUrl, status }
-let toastTimer;
+<div class="controls" id="controls">
+<div class="controls-row">
+<label>压缩质量</label>
+<input type="range" id="quality" min="10" max="100" value="75">
+<span class="quality-value" id="qualityLabel">75%</span>
+<label>格式</label>
+<select class="format-select" id="outputFormat">
+<option value="auto">自动（推荐）</option>
+<option value="image/jpeg">JPG</option>
+<option value="image/png">PNG</option>
+<option value="image/webp">WebP</option>
+</select>
+</div>
+<div class="controls-actions">
+<button class="btn btn-primary" id="compressAllBtn">🚀 全部压缩</button>
+<button class="btn btn-secondary" id="downloadAllBtn" disabled>📥 全部下载</button>
+<button class="btn btn-danger" id="clearBtn">🗑 清空</button>
+</div>
+</div>
+
+<div class="file-list" id="fileList"><div class="file-grid" id="fileGrid"></div></div>
+<div class="global-actions" id="globalActions">
+<button class="btn btn-primary" id="downloadAllBtn2" disabled>📥 一键下载全部</button>
+</div>
+
+<div class="contact-card">
+<div class="contact-card-inner">
+<p style="font-size:1rem;font-weight:600;color:#e8e8f0;">🔧 需要定制工具或做网站？</p>
+<p class="sub">我也接网站开发、小程序、自动化脚本等定制需求，价格实惠，交期快</p>
+<button onclick="navigator.clipboard.writeText('17703860141');var t=this;t.textContent='已复制！打开微信添加';setTimeout(function(){t.textContent='📱 加微信咨询'},2000)">📱 复制微信号，加我咨询</button>
+</div>
+</div>
+
+<footer class="footer">
+<div class="privacy-note">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+所有图片在你的浏览器中处理，不会上传到任何服务器
+</div>
+<p class="copyright">© 2026 极速图片压缩 · 免费在线工具</p>
+</footer>
+</div>
+<script>
+var uploadZone = document.getElementById('uploadZone');
+var fileInput = document.getElementById('fileInput');
+var fileGrid = document.getElementById('fileGrid');
+var fileList = document.getElementById('fileList');
+var controls = document.getElementById('controls');
+var stats = document.getElementById('stats');
+var qualitySlider = document.getElementById('quality');
+var qualityLabel = document.getElementById('qualityLabel');
+var outputFormat = document.getElementById('outputFormat');
+var compressAllBtn = document.getElementById('compressAllBtn');
+var downloadAllBtn = document.getElementById('downloadAllBtn');
+var downloadAllBtn2 = document.getElementById('downloadAllBtn2');
+var clearBtn = document.getElementById('clearBtn');
+var globalActions = document.getElementById('globalActions');
+var toast = document.getElementById('toast');
+
+var files = [];
+var toastTimer;
 
 function showToast(msg) {
   toast.textContent = msg;
   toast.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
+  toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2500);
 }
 
 function formatSize(bytes) {
-  if (bytes === 0) return '0 B';
-  const k = 1024;
-  const sizes = ['B','KB','MB','GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  const v = (bytes / Math.pow(k, i)).toFixed(i === 0 ? 0 : 1);
-  return v + ' ' + sizes[i];
+  if (!bytes || bytes === 0) return '0 B';
+  var k = 1024;
+  var sizes = ['B','KB','MB','GB'];
+  var i = Math.floor(Math.log(bytes) / Math.log(k));
+  return (bytes / Math.pow(k, i)).toFixed(i === 0 ? 0 : 1) + ' ' + sizes[i];
 }
 
 function updateStats() {
-  const total = files.length;
-  let originalSize = 0, compressedSize = 0;
-  files.forEach(f => {
+  var total = files.length;
+  var originalSize = 0, compressedSize = 0;
+  files.forEach(function(f) {
     originalSize += f.file.size;
     if (f.compressedBlob) compressedSize += f.compressedBlob.size;
   });
   document.getElementById('statCount').textContent = total;
   document.getElementById('statOriginal').textContent = formatSize(originalSize);
-  document.getElementById('statCompressed').textContent = compressedSize ? formatSize(compressedSize) : '—';
-  const saved = originalSize > 0 && compressedSize > 0
-    ? Math.round((1 - compressedSize / originalSize) * 100) : 0;
-  document.getElementById('statSaved').textContent = saved ? saved + '%' : '—';
+  document.getElementById('statCompressed').textContent = compressedSize ? formatSize(compressedSize) : '\u2014';
+  var saved = originalSize > 0 && compressedSize > 0 ? Math.round((1 - compressedSize / originalSize) * 100) : 0;
+  document.getElementById('statSaved').textContent = saved > 0 ? saved + '%' : '\u2014';
 
-  stats.classList.toggle('visible', total > 0);
-  controls.classList.toggle('visible', total > 0);
-  fileList.classList.toggle('visible', total > 0);
+  if (total > 0) { stats.classList.add('visible'); controls.classList.add('visible'); fileList.classList.add('visible'); }
+  else { stats.classList.remove('visible'); controls.classList.remove('visible'); fileList.classList.remove('visible'); }
 
-  const anyCompressed = files.some(f => f.compressedBlob);
+  var anyCompressed = files.some(function(f) { return f.compressedBlob; });
   downloadAllBtn.disabled = !anyCompressed;
   downloadAllBtn2.disabled = !anyCompressed;
-  globalActions.classList.toggle('visible', anyCompressed);
-
-  uploadZone.classList.toggle('has-files', total > 0);
+  if (anyCompressed) globalActions.classList.add('visible');
+  else globalActions.classList.remove('visible');
+  if (total > 0) uploadZone.classList.add('has-files');
+  else uploadZone.classList.remove('has-files');
 }
 
 function renderFiles() {
-  fileGrid.innerHTML = files.map((f, i) => {
-    const compressedSize = f.compressedBlob ? formatSize(f.compressedBlob.size) : '—';
-    const saved = f.compressedBlob ? Math.round((1 - f.compressedBlob.size / f.file.size) * 100) : 0;
-    const isDone = f.status === 'done';
-    const isProcessing = f.status === 'processing';
-    return `
-      <div class="file-card">
-        <img src="${f.previewUrl}" alt="${f.file.name}" class="preview-img" loading="lazy">
-        <div class="file-name" title="${f.file.name}">${f.file.name}</div>
-        <div class="size-info">
-          <span>原始: ${formatSize(f.file.size)}</span>
-          <span>压缩: ${compressedSize}</span>
-        </div>
-        ${saved > 0 ? `<div class="size-info"><span></span><span class="reduced">节省 ${saved}%</span></div>` : (f.compressedBlob && saved <= 0 ? `<div class="size-info"><span></span><span style="color:#f59e0b;font-weight:600;font-size:0.8rem;">⚠ 已是最优，保留原图</span></div>` : '')}
-        ${isProcessing ? '<div class="progress-bar"><div class="fill" style="width:60%"></div></div>' : ''}
-        <div class="card-actions">
-          ${isDone
-            ? `<button class="btn btn-primary" onclick="downloadOne(${i})">📥 下载</button>`
-            : `<button class="btn btn-primary" onclick="compressOne(${i})">🚀 压缩</button>`
-          }
-          <button class="btn btn-danger" onclick="removeOne(${i})">✕</button>
-        </div>
-      </div>`;
+  fileGrid.innerHTML = files.map(function(f, i) {
+    var done = f.status === 'done';
+    var compressedSize = f.compressedBlob ? formatSize(f.compressedBlob.size) : '\u2014';
+    var saved = (f.compressedBlob && !f.noReduction) ? Math.round((1 - f.compressedBlob.size / f.file.size) * 100) : 0;
+    var noteHtml = '';
+    if (done && f.noReduction && f.compressNote) {
+      noteHtml = '<div class="note warn">\u26a0 ' + f.compressNote + '</div>';
+    } else if (done && f.compressNote) {
+      noteHtml = '<div class="note good">\u2705 ' + f.compressNote + '</div>';
+    }
+    return '<div class="file-card">' +
+      '<img src="' + f.previewUrl + '" alt="" class="preview-img" loading="lazy">' +
+      '<div class="file-name" title="' + f.file.name + '">' + f.file.name + '</div>' +
+      '<div class="size-info"><span>原始: ' + formatSize(f.file.size) + '</span><span>压缩: ' + compressedSize + '</span></div>' +
+      (saved > 0 ? '<div class="size-info"><span></span><span style="color:var(--success);font-weight:600;">节省 ' + saved + '%</span></div>' : '') +
+      noteHtml +
+      '<div class="card-actions">' +
+        (done ? '<button class="btn btn-primary" onclick="downloadOne(' + i + ')">\u{1F4E5} 下载</button>' : '<button class="btn btn-primary" onclick="compressOne(' + i + ')">\u{1F680} 压缩</button>') +
+        '<button class="btn btn-danger" onclick="removeOne(' + i + ')">\u2715</button>' +
+      '</div></div>';
   }).join('');
 }
 
 function addFiles(newFiles) {
-  Array.from(newFiles).forEach(file => {
+  Array.from(newFiles).forEach(function(file) {
     if (!file.type.startsWith('image/')) return;
-    const previewUrl = URL.createObjectURL(file);
-    files.push({ file, compressedBlob: null, previewUrl, status: 'pending' });
+    var previewUrl = URL.createObjectURL(file);
+    files.push({ file: file, compressedBlob: null, previewUrl: previewUrl, status: 'pending', noReduction: false, compressNote: '' });
   });
   renderFiles();
   updateStats();
-  if (files.length > 0) showToast(`已添加 ${files.length} 个文件`);
+  if (files.length > 0) showToast('已添加 ' + files.length + ' 个文件');
 }
 
 async function compressOne(index) {
-  const f = files[index];
+  var f = files[index];
   if (!f || f.status === 'processing') return;
   f.status = 'processing';
   renderFiles();
 
   try {
-    const quality = parseInt(qualitySlider.value) / 100;
-    const fmt = outputFormat.value === 'auto' ? f.file.type : outputFormat.value;
+    var targetQuality = parseInt(qualitySlider.value) / 100;
 
-    const img = new Image();
-    const url = URL.createObjectURL(f.file);
-    await new Promise((resolve, reject) => {
+    // 加载图片
+    var img = new Image();
+    var url = URL.createObjectURL(f.file);
+    await new Promise(function(resolve, reject) {
       img.onload = resolve;
-      img.onerror = reject;
+      img.onerror = function() { reject(new Error('load failed')); };
       img.src = url;
     });
     URL.revokeObjectURL(url);
 
-    const canvas = document.createElement('canvas');
-    canvas.width = img.naturalWidth;
-    canvas.height = img.naturalHeight;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0);
+    var bestBlob = null;
 
-    const blob = await new Promise(resolve => canvas.toBlob(resolve, fmt, quality));
-    f.compressedBlob = blob;
-    f.status = 'done';
-  } catch (err) {
-    console.error('压缩失败:', f.file.name, err);
+    // 大图自动缩放到 2560px 以内
+    var MAX_DIM = 2560;
+    var w = img.naturalWidth;
+    var h = img.naturalHeight;
+    var scaled = false;
+
+    if (Math.max(w, h) > MAX_DIM) {
+      var ratio = MAX_DIM / Math.max(w, h);
+      w = Math.round(w * ratio);
+      h = Math.round(h * ratio);
+      scaled = true;
+    }
+
+    var canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    var ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(img, 0, 0, w, h);
+
+    // 多格式 x 多质量尝试，取最小结果
+    var trials = [];
+    var qualities = [targetQuality, 0.60, 0.40, 0.20];
+
+    // WebP（压缩率最高）
+    for (var qi = 0; qi < qualities.length; qi++) {
+      if (qualities[qi] >= 0.05) trials.push({ fmt: 'image/webp', q: qualities[qi] });
+    }
+    // JPEG（兼容性最好）
+    for (var qj = 0; qj < qualities.length; qj++) {
+      if (qualities[qj] >= 0.05) trials.push({ fmt: 'image/jpeg', q: qualities[qj] });
+    }
+
+    for (var ti = 0; ti < trials.length; ti++) {
+      var t = trials[ti];
+      try {
+        var blob = await new Promise(function(resolve) { canvas.toBlob(resolve, t.fmt, t.q); });
+        if (blob && blob.size > 0 && (!bestBlob || blob.size < bestBlob.size)) {
+          bestBlob = blob;
+        }
+      } catch(e) { /* skip */ }
+    }
+
+    // 判断结果
+    if (bestBlob && bestBlob.size < f.file.size) {
+      f.compressedBlob = bestBlob;
+      f.status = 'done';
+      f.noReduction = false;
+      f.compressNote = (scaled ? '已缩放 ' + w + 'x' + h + ' ' : '') + '压缩成功';
+    } else {
+      // 压不动：保留原图
+      f.compressedBlob = f.file.slice(0, f.file.size, f.file.type);
+      f.status = 'done';
+      f.noReduction = true;
+      if (f.file.type === 'image/png' && f.file.size > 500 * 1024) {
+        f.compressNote = 'PNG格式体积大，建议格式选WebP再压';
+      } else if (f.file.size > 1024 * 1024) {
+        f.compressNote = '此图已高度压缩，大图会自动缩放';
+      } else {
+        f.compressNote = '原图已是最优大小';
+      }
+    }
+  } catch(err) {
+    console.error('fail:', f.file.name, err);
     f.status = 'pending';
-    showToast('⚠️ ' + f.file.name + ' 压缩失败');
+    showToast('\u26a0 ' + f.file.name + ' 失败，请重试');
   }
 
   renderFiles();
@@ -709,95 +338,67 @@ async function compressOne(index) {
 }
 
 function downloadOne(index) {
-  const f = files[index];
+  var f = files[index];
   if (!f || !f.compressedBlob) return;
-  const extMap = {
-    'image/jpeg': '.jpg',
-    'image/png': '.png',
-    'image/webp': '.webp',
-  };
-  const ext = extMap[f.compressedBlob.type] || '.jpg';
-  const name = f.file.name.replace(/\.[^.]+$/, '') + '_compressed' + ext;
-  const url = URL.createObjectURL(f.compressedBlob);
-  const a = document.createElement('a');
+  var extMap = { 'image/jpeg': '.jpg', 'image/png': '.png', 'image/webp': '.webp' };
+  var ext = extMap[f.compressedBlob.type] || '.jpg';
+  var name = f.file.name.replace(/\.[^.]+$/, '') + '_compressed' + ext;
+  var url = URL.createObjectURL(f.compressedBlob);
+  var a = document.createElement('a');
   a.href = url;
   a.download = name;
   a.click();
   URL.revokeObjectURL(url);
-  showToast('✅ 下载成功');
+  showToast('\u2705 下载成功');
 }
 
 function removeOne(index) {
-  const f = files[index];
-  if (f.previewUrl) URL.revokeObjectURL(f.previewUrl);
+  if (files[index].previewUrl) URL.revokeObjectURL(files[index].previewUrl);
   files.splice(index, 1);
   renderFiles();
   updateStats();
-  if (files.length === 0) showToast('已清空');
 }
 
 async function compressAll() {
-  const pending = files.filter(f => f.status === 'pending');
-  if (pending.length === 0) {
-    showToast('没有需要压缩的图片');
-    return;
-  }
+  var pending = files.filter(function(f) { return f.status === 'pending'; });
+  if (pending.length === 0) { showToast('没有需要压缩的图片'); return; }
   compressAllBtn.disabled = true;
-  compressAllBtn.textContent = '⏳ 压缩中...';
-  showToast(`正在压缩 ${pending.length} 张图片...`);
-
-  for (let i = 0; i < files.length; i++) {
-    if (files[i].status === 'pending') {
-      await compressOne(i);
-    }
+  compressAllBtn.textContent = '\u23F3 压缩中...';
+  showToast('正在压缩 ' + pending.length + ' 张图片...');
+  for (var i = 0; i < files.length; i++) {
+    if (files[i].status === 'pending') await compressOne(i);
   }
-
   compressAllBtn.disabled = false;
-  compressAllBtn.textContent = '🚀 全部压缩';
-  showToast('✅ 全部压缩完成！');
+  compressAllBtn.textContent = '\u{1F680} 全部压缩';
+  showToast('\u2705 全部压缩完成！');
 }
 
 function downloadAll() {
-  const done = files.filter(f => f.compressedBlob);
+  var done = files.filter(function(f) { return f.compressedBlob; });
   if (done.length === 0) return;
-  done.forEach((_, i) => {
-    const idx = files.indexOf(done[i]);
-    setTimeout(() => downloadOne(idx), i * 200);
-  });
-  showToast('📥 正在下载 ' + done.length + ' 个文件...');
+  done.forEach(function(_, i) { setTimeout(function() { downloadOne(files.indexOf(done[i])); }, i * 200); });
+  showToast('\u{1F4E5} 正在下载 ' + done.length + ' 个文件...');
 }
 
 function clearAll() {
-  files.forEach(f => { if (f.previewUrl) URL.revokeObjectURL(f.previewUrl); });
+  files.forEach(function(f) { if (f.previewUrl) URL.revokeObjectURL(f.previewUrl); });
   files = [];
   fileInput.value = '';
   renderFiles();
   updateStats();
-  showToast('已清空全部文件');
 }
 
-// ==================== 事件绑定 ====================
-uploadZone.addEventListener('click', () => fileInput.click());
-fileInput.addEventListener('change', e => addFiles(e.target.files));
-
-uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
-uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
-uploadZone.addEventListener('drop', e => {
-  e.preventDefault();
-  uploadZone.classList.remove('drag-over');
-  addFiles(e.dataTransfer.files);
-});
-
-qualitySlider.addEventListener('input', () => {
-  qualityLabel.textContent = qualitySlider.value + '%';
-});
-
+// Events
+uploadZone.addEventListener('click', function() { fileInput.click(); });
+fileInput.addEventListener('change', function(e) { addFiles(e.target.files); });
+uploadZone.addEventListener('dragover', function(e) { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+uploadZone.addEventListener('dragleave', function() { uploadZone.classList.remove('drag-over'); });
+uploadZone.addEventListener('drop', function(e) { e.preventDefault(); uploadZone.classList.remove('drag-over'); addFiles(e.dataTransfer.files); });
+qualitySlider.addEventListener('input', function() { qualityLabel.textContent = qualitySlider.value + '%'; });
 compressAllBtn.addEventListener('click', compressAll);
 downloadAllBtn.addEventListener('click', downloadAll);
 downloadAllBtn2.addEventListener('click', downloadAll);
 clearBtn.addEventListener('click', clearAll);
-
-// 初始状态
 updateStats();
 </script>
 </body>
